@@ -1,0 +1,27 @@
+{
+  "expo": {
+    "name": "2nd_Home",
+    "slug": "second-home",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "scheme": "secondhome",
+    "ios": {
+      "supportsTablet": false
+    },
+    "android": {
+      "package": "com.secondhome.app",
+      "adaptiveIcon": {
+        "backgroundColor": "#1E293B",
+        "foregroundImage": "./assets/android-icon-foreground.png",
+        "backgroundImage": "./assets/android-icon-background.png",
+        "monochromeImage": "./assets/android-icon-monochrome.png"
+      },
+      "predictiveBackGestureEnabled": false
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    }
+  }
+}

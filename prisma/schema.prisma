@@ -1,0 +1,138 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model Profile {
+  id         String   @id @db.Uuid
+  name       String?
+  phone      String?
+  role       String   @default("tenant")
+  push_token String?
+  is_active  Boolean  @default(true)
+
+  tenancies     Tenancy[]
+  complaints    Complaint[]
+  meeting_rsvps MeetingRsvp[]
+  messages      Message[]
+
+  @@map("profiles")
+}
+
+model Setting {
+  id           Int     @id @default(1)
+  owner_upi_id String?
+  owner_name   String?
+
+  @@map("settings")
+}
+
+model Room {
+  id           Int       @id @default(autoincrement())
+  room_no      String
+  monthly_rent Int
+  capacity     Int       @default(1)
+
+  tenancies Tenancy[]
+
+  @@map("rooms")
+}
+
+model Tenancy {
+  id         Int       @id @default(autoincrement())
+  tenant_id  String    @db.Uuid
+  room_id    Int
+  start_date DateTime  @db.Date
+  end_date   DateTime? @db.Date
+
+  tenant    Profile   @relation(fields: [tenant_id], references: [id], onDelete: Cascade)
+  room      Room      @relation(fields: [room_id], references: [id], onDelete: Restrict)
+  rent_dues RentDue[]
+
+  @@map("tenancies")
+}
+
+model RentDue {
+  id         Int      @id @default(autoincrement())
+  tenancy_id Int
+  month      DateTime @db.Date
+  amount     Int
+  status     String   @default("unpaid")
+
+  tenancy  Tenancy   @relation(fields: [tenancy_id], references: [id], onDelete: Cascade)
+  payments Payment[]
+
+  @@map("rent_dues")
+}
+
+model Payment {
+  id             Int      @id @default(autoincrement())
+  due_id         Int
+  utr            String   @unique
+  screenshot_url String?
+  status         String   @default("pending")
+  created_at     DateTime @default(now()) @db.Timestamptz(6)
+
+  due RentDue @relation(fields: [due_id], references: [id], onDelete: Cascade)
+
+  @@map("payments")
+}
+
+model Complaint {
+  id          Int      @id @default(autoincrement())
+  tenant_id   String   @db.Uuid
+  category    String
+  details     String
+  photo_url   String?
+  admin_reply String?
+  status      String   @default("open")
+  created_at  DateTime @default(now()) @db.Timestamptz(6)
+
+  tenant Profile @relation(fields: [tenant_id], references: [id], onDelete: Cascade)
+
+  @@map("complaints")
+}
+
+model Announcement {
+  id         Int       @id @default(autoincrement())
+  title      String
+  body       String
+  is_meeting Boolean   @default(false)
+  meeting_at DateTime? @db.Timestamptz(6)
+  venue      String?
+  created_at DateTime  @default(now()) @db.Timestamptz(6)
+
+  rsvps MeetingRsvp[]
+
+  @@map("announcements")
+}
+
+model MeetingRsvp {
+  announcement_id Int
+  tenant_id       String @db.Uuid
+  response        String
+
+  announcement Announcement @relation(fields: [announcement_id], references: [id], onDelete: Cascade)
+  tenant       Profile      @relation(fields: [tenant_id], references: [id], onDelete: Cascade)
+
+  @@id([announcement_id, tenant_id])
+  @@map("meeting_rsvps")
+}
+
+model Message {
+  id         BigInt   @id @default(autoincrement())
+  room       String   @default("general")
+  sender_id  String   @db.Uuid
+  body       String?
+  media_url  String?
+  created_at DateTime @default(now()) @db.Timestamptz(6)
+
+  sender Profile @relation(fields: [sender_id], references: [id], onDelete: Cascade)
+
+  @@map("messages")
+}
