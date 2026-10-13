@@ -6,8 +6,8 @@ import { useAuth } from '../context/AuthContext';
 import { colors } from '../theme/colors';
 import { LoginScreen } from '../screens/auth/LoginScreen';
 import { ForcePasswordChangeScreen } from '../screens/auth/ForcePasswordChangeScreen';
-import { AdminDashboardScreen } from '../screens/admin/AdminDashboardScreen';
-import { TenantHomeScreen } from '../screens/tenant/TenantHomeScreen';
+import { AdminNavigator } from './AdminNavigator';
+import { TenantNavigator } from './TenantNavigator';
 
 const Stack = createNativeStackNavigator();
 
@@ -46,10 +46,10 @@ export const RootNavigator = () => {
           />
         ) : role === 'admin' ? (
           // Admin Role Application
-          <Stack.Screen name="AdminApp" component={AdminDashboardScreen} />
+          <Stack.Screen name="AdminApp" component={AdminNavigator} />
         ) : (
           // Tenant Role Application
-          <Stack.Screen name="TenantApp" component={TenantHomeScreen} />
+          <Stack.Screen name="TenantApp" component={TenantNavigator} />
         )}
       </Stack.Navigator>
     </NavigationContainer>

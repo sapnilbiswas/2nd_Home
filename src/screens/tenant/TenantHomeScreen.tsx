@@ -11,6 +11,7 @@ import { useAuth } from '../../context/AuthContext';
 import { colors } from '../../theme/colors';
 import { Button } from '../../components/Button';
 import { supabase } from '../../api/supabase';
+import { registerForPushNotifications } from '../../api/notifications';
 import { Tenancy, Room } from '../../types/database';
 
 export const TenantHomeScreen = ({ navigation }: any) => {
@@ -52,6 +53,9 @@ export const TenantHomeScreen = ({ navigation }: any) => {
 
   useEffect(() => {
     fetchTenantData();
+    if (user?.id) {
+      registerForPushNotifications(user.id);
+    }
   }, [user]);
 
   const onRefresh = async () => {

@@ -95,8 +95,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, []);
 
   // Format identifier: converts phone number (e.g. 9876543210) to phone email alias (9876543210@house.app)
+  // and allows typing "admin" or admin phone directly
   const formatEmail = (identifier: string): string => {
     const cleaned = identifier.trim().toLowerCase();
+    if (cleaned === 'admin' || cleaned === '9999999999') {
+      return 'admin@house.app';
+    }
     if (cleaned.includes('@')) {
       return cleaned;
     }

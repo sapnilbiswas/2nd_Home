@@ -226,7 +226,7 @@ create policy "Messages insertable by sender"
 
 -- 14. Seed default settings row if none exists
 insert into public.settings (id, owner_upi_id, owner_name)
-values (1, '9876543210@upi', 'House Owner')
+values (1, '790859690@axl', '2nd_Home Living')
 on conflict (id) do nothing;
 
 -- 15. Enable Realtime replication for chat, announcements, complaints, and payments

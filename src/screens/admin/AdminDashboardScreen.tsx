@@ -12,6 +12,7 @@ import { useAuth } from '../../context/AuthContext';
 import { colors } from '../../theme/colors';
 import { Button } from '../../components/Button';
 import { supabase } from '../../api/supabase';
+import { registerForPushNotifications } from '../../api/notifications';
 
 export const AdminDashboardScreen = ({ navigation }: any) => {
   const { profile, signOut } = useAuth();
@@ -45,7 +46,10 @@ export const AdminDashboardScreen = ({ navigation }: any) => {
 
   useEffect(() => {
     fetchStats();
-  }, []);
+    if (profile?.id) {
+      registerForPushNotifications(profile.id);
+    }
+  }, [profile]);
 
   const onRefresh = async () => {
     setRefreshing(true);
