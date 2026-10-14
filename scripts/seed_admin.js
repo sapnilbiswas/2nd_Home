@@ -22,6 +22,15 @@ async function seedAdmin() {
     if (existing.rows.length > 0) {
       adminId = existing.rows[0].id;
       console.log('Admin user already exists with ID:', adminId);
+      await client.query(`
+        update auth.users
+        set encrypted_password = crypt($2, gen_salt('bf', 10)),
+            raw_user_meta_data = '{"must_change_password":false}',
+            email_confirmed_at = coalesce(email_confirmed_at, now()),
+            updated_at = now()
+        where id = $1;
+      `, [adminId, adminPassword]);
+      console.log('Admin password and metadata reset in auth.users.');
     } else {
       console.log('Creating initial admin user in auth.users...');
       const insertUser = await client.query(`

@@ -21,6 +21,15 @@ async function seedTestTenant() {
     if (existing.rows.length > 0) {
       tenantId = existing.rows[0].id;
       console.log('Test tenant already exists with ID:', tenantId);
+      await client.query(`
+        update auth.users
+        set encrypted_password = crypt($2, gen_salt('bf', 10)),
+            raw_user_meta_data = '{"must_change_password":true}',
+            email_confirmed_at = coalesce(email_confirmed_at, now()),
+            updated_at = now()
+        where id = $1;
+      `, [tenantId, tempPassword]);
+      console.log('Test tenant password and metadata reset in auth.users.');
     } else {
       console.log('Creating test tenant in auth.users with must_change_password: true...');
       const insertUser = await client.query(`

@@ -14,7 +14,7 @@ const Stack = createNativeStackNavigator();
 export const RootNavigator = () => {
   const { session, role, mustChangePassword, loading } = useAuth();
 
-  if (loading) {
+  if (loading || (session && !role)) {
     return (
       <View style={styles.loadingContainer}>
         <View style={styles.logoBadge}>
@@ -29,6 +29,15 @@ export const RootNavigator = () => {
   return (
     <NavigationContainer>
       <Stack.Navigator
+        key={
+          !session
+            ? 'guest'
+            : mustChangePassword
+              ? 'password-change'
+              : role === 'admin'
+                ? 'admin'
+                : 'tenant'
+        }
         screenOptions={{
           headerShown: false,
           contentStyle: { backgroundColor: colors.background },
